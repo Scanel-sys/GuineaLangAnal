@@ -4,7 +4,7 @@
     #define YYSTYPE std::string
 
     void yyerror(char *s);
-
+    void InvalidToken();
 
 %}
 
@@ -12,13 +12,19 @@
 %option noyywrap
 
 %x STR
+%x ML_COMMENT
 
 %%
 
 [/][/].*\n      ; // comment
+<INITIAL>"/*"                   BEGIN(ML_COMMENT);
+<ML_COMMENT>.*\n*                ;
+<ML_COMMENT>"*/"                BEGIN(INITIAL);
 if              return IF;
 else            return ELSE;
+for             return FOR;
 while           return WHILE;
+do              return DO;
 return          return RETURN;
 print           return PRINT;
 ==              return EQ;
@@ -56,8 +62,6 @@ print           return PRINT;
 
 [-{};()=<>+*/!,] { return *yytext; }
 
-.               yyerror("Invalid character");
-
-
+.               {InvalidToken();}
 
 %%

@@ -3,13 +3,18 @@
     #include <stdlib.h>
     
     extern int yylineno;
+    extern int yytext;
     extern int yylex();
     
-    void yyerror(char *s) 
+    void yyerror(const char *s) 
     {
-        fprintf(stderr, "syntax error, line : %d\n", yylineno);
-        exit(1);
+        fprintf(stderr, "[line : %d] %s\n", yylineno, s);
     }
+    void InvalidToken()
+    {
+        printf("Error on  %d : \n Invalid Token %d\n", yylineno, yytext);
+    }
+
     #define YY_INPUT(buf,result,max_size)  {\
     result = GetNextChar(buf, max_size); \
     if (  result <= 0  ) \
@@ -17,8 +22,10 @@
     }
 %}
 
+%define parse.error verbose
 
-%token IF ELSE WHILE RETURN
+
+%token IF ELSE WHILE DO FOR RETURN
 %token EQ LE GE NE
 %token AND OR 
 %token STRING NUM ID
@@ -31,14 +38,23 @@ PROGRAM: OPS
 OPS:    OP
 |       OPS OP
 
-OP:    '{' OPS '}'
+OP:     BODY
+|       ';'
 |       EXPR ';'
 |       IF '(' EXPR ')' '{' OPS '}'
 |       IF '(' EXPR ')' '{' OPS '}' ELSE '{' OPS '}'
+|       FOR '(' FOR_EXPR ';' FOR_EXPR ';' FOR_EXPR ')' OP
 |       WHILE '(' EXPR ')' OP
+|       DO OP WHILE '(' EXPR ')' ';'
 |       RETURN ';'
 |       RETURN FUNCTOR
 
+FOR_EXPR:
+|   EXPR
+
+BODY:
+    '{'     '}'
+|   '{' OPS '}'
 
 EXPR:   EXPR_LOGIC_1
 |       ID '=' EXPR
