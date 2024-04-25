@@ -1,0 +1,9 @@
+# files
+*.doc*
+*.txt
+parser.tab.*
+lex.yy.c
+
+# dirs
+build
+.vscode
