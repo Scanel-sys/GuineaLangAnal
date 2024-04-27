@@ -59,12 +59,12 @@ char *dumpString(char *s) {
 
 extern
 void PrintError(char *errorstring, ...) {
-  static char errmsg[10000];
-  va_list args;
+    static char errmsg[10000];
+    va_list args;
 
-  int start = nTokenStart;
-  int end=start + nTokenLength - 1;
-  int i;
+    int start = nTokenStart;
+    int end=start + nTokenLength - 1;
+    int i;
 
   /*================================================================*/
   /* a bit more complicate version ---------------------------------*/
@@ -84,16 +84,20 @@ void PrintError(char *errorstring, ...) {
         for (i=end+1; i<lBuffer; i++)
         fprintf(stdout, ".");
         fprintf(stdout, "   token%d:%d\n", start, end);
-  }
+    }
 /* */
 
-  /*================================================================*/
-  /* print it using variable arguments -----------------------------*/
-  va_start(args, errorstring);
-  vsprintf(errmsg, errorstring, args);
-  va_end(args);
+    /*================================================================*/
+    /* print it using variable arguments -----------------------------*/
+    va_start(args, errorstring);
+    vsprintf(errmsg, errorstring, args);
+    va_end(args);
 
-  fprintf(stdout, "Error: %s\n", errmsg);
+    fprintf(stdout, "Error: %s\n", errmsg);
+    
+    for (i = 1; i < 71; i++)
+        fprintf(stdout, " "); 
+    fprintf(stdout, "\n"); 
 }
 
 /*--------------------------------------------------------------------
@@ -107,16 +111,13 @@ void DumpRow(void) {
         int i;
         fprintf(stdout, "       |");
         for (i = 1; i < 71; i++)
-        if (  i % 10 == 0  )
-            fprintf(stdout, ":"); 
-        else if (  i % 5 == 0  )
-            fprintf(stdout, "+"); 
-        else
-            fprintf(stdout, ".");
+            fprintf(stdout, "-"); 
         fprintf(stdout, "\n"); 
     }
     else 
+    {
         fprintf(stdout, "%6d |%.*s", nRow, lBuffer, buffer);
+    }
 }
 
 extern
@@ -197,17 +198,17 @@ int getNextLine(void) {
     if (  p == NULL  ) {
         if (  ferror(file)  )
             return -1;
-    eof = true;
-    return 1;
-  }
+        eof = true;
+        return 1;
+    }
 
-  nRow += 1;
-  lBuffer = strlen(buffer);
-  DumpRow();
+    nRow += 1;
+    lBuffer = strlen(buffer);
+    //DumpRow();                    // print all file lines
 
-  /*================================================================*/
-  /* that's it -----------------------------------------------------*/
-  return 0;
+    /*================================================================*/
+    /* that's it -----------------------------------------------------*/
+    return 0;
 }
 
 

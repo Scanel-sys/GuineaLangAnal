@@ -11,6 +11,7 @@
 
     extern void yyerror(char *s) 
     {
+        DumpRow();
         PrintError(s);
     }
 
@@ -23,13 +24,11 @@
 %defines
 %define parse.error verbose
 
-
 %token IF ELSE WHILE DO FOR RETURN
 %token EQ LE GE NE
 %token AND OR 
 %token STRING NUM ID
 %token PRINT
-
 %%
 
 PROGRAM: OPS
