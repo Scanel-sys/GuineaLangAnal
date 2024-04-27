@@ -5,17 +5,19 @@ BUILDDIR = build
 SRCDIR = src
 
 LEX = flex
-LEX_FILES = lang.lex
+LEX_FILES = lang.l
 BISON = bison
 PARSER_FILE = parser.y
-SRC = main.c lex.yy.c parser.tab.c
+SRC = GuineaLang.c parser.tab.c lex.yy.c 
 TARGET = GuineaAnal
 
 all: clean build
 
 build:
 	$(BISON) -Wcounterexamples -d $(PARSER_FILE)
+	@echo "-----------------------------------------"
 	$(LEX) $(LEX_FILES)
+	@echo "-----------------------------------------"
 	$(CC) $(SRC) -lm -o $(TARGET)
 
 clean:

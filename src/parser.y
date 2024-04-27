@@ -1,18 +1,17 @@
+%locations
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
-    
+    #include "GuineaLang.h"
+
+    #define YYERROR_VERBOSE 1
+
     extern int yylineno;
-    extern int yytext;
+    extern char * yytext;
     extern int yylex();
-    
-    void yyerror(const char *s) 
+    extern YYLTYPE yylloc;
+
+    extern void yyerror(char *s) 
     {
-        fprintf(stderr, "[line : %d] %s\n", yylineno, s);
-    }
-    void InvalidToken()
-    {
-        printf("Error on  %d : \n Invalid Token %d\n", yylineno, yytext);
+        PrintError(s);
     }
 
     #define YY_INPUT(buf,result,max_size)  {\
@@ -21,7 +20,7 @@
     	result = YY_NULL; \
     }
 %}
-
+%defines
 %define parse.error verbose
 
 
@@ -47,7 +46,11 @@ OP:     BODY
 |       WHILE '(' EXPR ')' OP
 |       DO OP WHILE '(' EXPR ')' ';'
 |       RETURN ';'
-|       RETURN FUNCTOR
+|       RETURN FUNCTOR ';'
+|       EXPR error ';'      { yyerrok; }
+|       error '\n'          { yyerrok; }
+|       '(' error ')'       { yyerrok; }
+|       '{' error '}'       { yyerrok; }
 
 FOR_EXPR:
 |   EXPR
@@ -56,7 +59,8 @@ BODY:
     '{'     '}'
 |   '{' OPS '}'
 
-EXPR:   EXPR_LOGIC_1
+EXPR:
+        EXPR_LOGIC_1
 |       ID '=' EXPR
 
 FUNCTION:
@@ -91,10 +95,12 @@ EXPR_MUL:
 
 VAL: 
     NUM
+|   STRING
 |   UNARY VAL
 |   '(' EXPR ')' 
 |   ID 
 |   FUNCTION FUNCTOR
+
 
 UNARY:
     '-'
@@ -102,4 +108,4 @@ UNARY:
 |   '!'
 
 ARGS: | ARG | ARGS ',' ARG ;
-ARG:   EXPR | STRING
+ARG:   EXPR
