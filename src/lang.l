@@ -41,6 +41,11 @@ while           { BeginToken(yytext); return WHILE; }
 do              { BeginToken(yytext); return DO; }
 return          { BeginToken(yytext); return RETURN; }
 print           { BeginToken(yytext); return PRINT; }
+int             { BeginToken(yytext); return INT; }
+char            { BeginToken(yytext); return CHAR; }
+float           { BeginToken(yytext); return FLOAT; }
+double          { BeginToken(yytext); return DOUBLE; }
+void            { BeginToken(yytext); return VOID; }
 ==              { BeginToken(yytext); return EQ; }
 [<]=            { BeginToken(yytext); return LE; }
 >=              { BeginToken(yytext); return GE; }
@@ -88,12 +93,10 @@ print           { BeginToken(yytext); return PRINT; }
 
 <STR>\\         {
                   BeginToken(yytext);
-
                 }
 
 <STR>\n         {
                   BeginToken(yytext);
-
                 }
 
 [ \t\r\n]       BeginToken(yytext); // whitespace

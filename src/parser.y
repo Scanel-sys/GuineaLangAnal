@@ -24,11 +24,13 @@
 %defines
 %define parse.error verbose
 
+%start PROGRAM
 %token IF ELSE WHILE DO FOR RETURN
 %token EQ LE GE NE
 %token AND OR 
 %token STRING NUM ID
 %token PRINT
+%token INT CHAR FLOAT DOUBLE VOID
 %%
 
 PROGRAM: OPS
@@ -46,13 +48,18 @@ OP:     BODY
 |       DO OP WHILE '(' EXPR ')' ';'
 |       RETURN ';'
 |       RETURN FUNCTOR ';'
-|       EXPR error ';'      { yyerrok; }
-|       error '\n'          { yyerrok; }
-|       '(' error ')'       { yyerrok; }
-|       '{' error '}'       { yyerrok; }
+|       VAR_DECL    ';'
+|       FUNCTION_DECL
+|       EXPR error '\n'           { yyerrok; }
+|       EXPR error OP           { yyerrok; }
+|       VAR_DECL error '\n'     { yyerrok; }
+|       VAR_DECL error ';'      { yyerrok; }
 
 FOR_EXPR:
 |   EXPR
+|   VAR_DECL
+|   FOR_EXPR ',' EXPR
+|   FOR_EXPR ',' VAR_DECL
 
 BODY:
     '{'     '}'
@@ -62,8 +69,27 @@ EXPR:
         EXPR_LOGIC_1
 |       ID '=' EXPR
 
+TYPES:
+        INT
+|       CHAR
+|       FLOAT
+|       DOUBLE
+|       VOID
+
+FUNCTION_DECL: 
+        TYPES ID FUNCTION_DECL_FUNCTOR BODY
+
+VAR_DECL:
+        TYPES ID
+|       TYPES ID '=' EXPR
+
 FUNCTION:
     PRINT
+
+FUNCTION_DECL_FUNCTOR: '(' DECL_ARGS ')'
+DECL_ARGS: | DECL_ARG | DECL_ARGS ',' DECL_ARG
+DECL_ARG:  VAR_DECL 
+
 
 FUNCTOR: '(' ARGS ')'
 
@@ -106,5 +132,5 @@ UNARY:
 |   '+'
 |   '!'
 
-ARGS: | ARG | ARGS ',' ARG ;
+ARGS: | ARG | ARGS ',' ARG
 ARG:   EXPR

@@ -3,7 +3,7 @@
 
 #define true 1
 #define false 0
-
+#define PREAMBULA_SIZE 7
 /*
  * global variable
  */
@@ -83,7 +83,7 @@ void PrintError(char *errorstring, ...) {
         fprintf(stdout, "^");
         for (i=end+1; i<lBuffer; i++)
         fprintf(stdout, ".");
-        fprintf(stdout, "   token%d:%d\n", start, end);
+        fprintf(stdout, "   token %d:%d\n", start, end);
     }
 /* */
 
@@ -107,17 +107,28 @@ void PrintError(char *errorstring, ...) {
  *------------------------------------------------------------------*/
 extern
 void DumpRow(void) {
-    if (  nRow == 0  ) {
-        int i;
-        fprintf(stdout, "       |");
-        for (i = 1; i < 71; i++)
-            fprintf(stdout, "-"); 
-        fprintf(stdout, "\n"); 
-    }
-    else 
+    fprintf(stdout, "%6d |%.*s", nRow, lBuffer, buffer);
+}
+
+extern
+void PrintSeparateLine(char * msg){
+    int i;
+    if(msg != NULL)
     {
-        fprintf(stdout, "%6d |%.*s", nRow, lBuffer, buffer);
+        fprintf(stdout, "%s", msg);
+        int msg_len = strlen(msg); 
+        if(msg_len < PREAMBULA_SIZE)
+        {
+            for(i = 0; i < PREAMBULA_SIZE - msg_len; i++)
+                fprintf(stdout, " ");
+        }
+        fprintf(stdout, "|");
     }
+    else
+        fprintf(stdout, "       |");
+    for (i = 1; i < 71; i++)
+        fprintf(stdout, "-"); 
+    fprintf(stdout, "\n"); 
 }
 
 extern
@@ -222,13 +233,13 @@ int main(int argc, char *argv[])
         fclose(file);
         return 12;
     }
-    DumpRow();
+    PrintSeparateLine("start");
     
     if (  getNextLine() == 0  )
         yyparse();
     
     free(buffer);
     fclose(file);
-
+    PrintSeparateLine("exit");
     return 0;
 }

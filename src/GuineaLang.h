@@ -31,7 +31,8 @@ extern void yyerror(char*);
 /*
  * GuineaLang.cpp
  */
-extern void DumpRow(void); 
+extern void DumpRow(void);
+extern void PrintSeparateLine(char * msg);
 extern int GetNextChar(char *b, int maxBuffer);
 extern void BeginToken(char*);
 extern void PrintError(char *s, ...);
