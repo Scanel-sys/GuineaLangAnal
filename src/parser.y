@@ -50,9 +50,7 @@ OP:     BODY
 |       RETURN FUNCTOR ';'
 |       VAR_DECL    ';'
 |       FUNCTION_DECL
-|       EXPR error '\n'           { yyerrok; }
 |       EXPR error OP           { yyerrok; }
-|       VAR_DECL error '\n'     { yyerrok; }
 |       VAR_DECL error ';'      { yyerrok; }
 
 FOR_EXPR:
