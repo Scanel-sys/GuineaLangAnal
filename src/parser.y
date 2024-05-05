@@ -43,7 +43,7 @@ OP:     BODY
 |       EXPR ';'
 |       IF '(' EXPR ')' '{' OPS '}'
 |       IF '(' EXPR ')' '{' OPS '}' ELSE '{' OPS '}'
-|       FOR '(' FOR_EXPR ';' FOR_EXPR ';' FOR_EXPR ')' OP
+|       FOR '(' FOR_EXPR_1 ';' FOR_EXPR_2 ';' FOR_EXPR_3 ')' OP
 |       WHILE '(' EXPR ')' OP
 |       DO OP WHILE '(' EXPR ')' ';'
 |       RETURN ';'
@@ -55,11 +55,17 @@ OP:     BODY
 |       error OP                { yyerrok; }
 |       VAR_DECL error ';'      { yyerrok; }
 
-FOR_EXPR:
+FOR_EXPR_1:
 |   EXPR
 |   VAR_DECL
-|   FOR_EXPR ',' EXPR
-|   FOR_EXPR ',' VAR_DECL
+|   FOR_EXPR_1 ',' EXPR
+|   FOR_EXPR_1 ',' VAR_DECL
+
+FOR_EXPR_2:
+|       EXPR_LOGIC_1
+
+FOR_EXPR_3:
+|       ID '=' EXPR     
 
 BODY:
     '{'     '}'
@@ -76,6 +82,15 @@ TYPES:
 |       DOUBLE
 |       VOID
 |       BOOL
+
+cmp_symbols:
+        EQ 
+|       NE 
+|       LE 
+|       GE 
+|       '>' 
+|       '<' 
+
 
 FUNCTION_DECL: 
         TYPES ID FUNCTION_DECL_FUNCTOR BODY
@@ -104,12 +119,8 @@ EXPR_LOGIC_1:
 
 EXPR_LOGIC_2:  
         EXPR_SUM
-|       EXPR_LOGIC_2 EQ EXPR_SUM
-|       EXPR_LOGIC_2 NE EXPR_SUM
-|       EXPR_LOGIC_2 LE EXPR_SUM
-|       EXPR_LOGIC_2 GE EXPR_SUM
-|       EXPR_LOGIC_2 '>' EXPR_SUM
-|       EXPR_LOGIC_2 '<' EXPR_SUM
+|       EXPR_LOGIC_2 cmp_symbols EXPR_SUM
+
 
 EXPR_SUM: 
         EXPR_MUL
