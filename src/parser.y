@@ -30,7 +30,7 @@
 %token AND OR 
 %token STRING NUM ID
 %token PRINT
-%token INT CHAR FLOAT DOUBLE VOID
+%token INT CHAR FLOAT DOUBLE VOID BOOL
 %%
 
 PROGRAM: OPS
@@ -50,7 +50,9 @@ OP:     BODY
 |       RETURN FUNCTOR ';'
 |       VAR_DECL    ';'
 |       FUNCTION_DECL
+|       FOR error ';'           { yyerrok; }
 |       EXPR error OP           { yyerrok; }
+|       error OP                { yyerrok; }
 |       VAR_DECL error ';'      { yyerrok; }
 
 FOR_EXPR:
@@ -73,9 +75,11 @@ TYPES:
 |       FLOAT
 |       DOUBLE
 |       VOID
+|       BOOL
 
 FUNCTION_DECL: 
         TYPES ID FUNCTION_DECL_FUNCTOR BODY
+|       TYPES ID FUNCTION_DECL_FUNCTOR ';'
 
 VAR_DECL:
         TYPES ID
@@ -83,6 +87,7 @@ VAR_DECL:
 
 FUNCTION:
     PRINT
+
 
 FUNCTION_DECL_FUNCTOR: '(' DECL_ARGS ')'
 DECL_ARGS: | DECL_ARG | DECL_ARGS ',' DECL_ARG
@@ -97,7 +102,8 @@ EXPR_LOGIC_1:
 |       EXPR_LOGIC_1 AND EXPR_LOGIC_2
 |       EXPR_LOGIC_1 OR  EXPR_LOGIC_2
 
-EXPR_LOGIC_2:  EXPR_SUM
+EXPR_LOGIC_2:  
+        EXPR_SUM
 |       EXPR_LOGIC_2 EQ EXPR_SUM
 |       EXPR_LOGIC_2 NE EXPR_SUM
 |       EXPR_LOGIC_2 LE EXPR_SUM
